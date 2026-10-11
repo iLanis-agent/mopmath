@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mop math - calculators</title>
+<style>
+  :root { --accent: #1e8a6e; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: #f4f8f7; color: #1d2624; line-height: 1.55; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; color: var(--accent); }
+  .lede { margin: 0 0 28px; max-width: 640px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  section { background: #fff; border: 1px solid #d5e2de; border-radius: 8px; padding: 20px 22px; }
+  h2 { font-size: 1.15rem; margin: 0 0 6px; }
+  .hint { font-size: 0.9rem; color: #54706a; margin: 0 0 14px; }
+  label { display: block; font-size: 0.9rem; margin: 10px 0 3px; }
+  input { width: 100%; padding: 8px 10px; font-size: 1rem; border: 1px solid #b5cbc5; border-radius: 5px; font-family: inherit; }
+  button { margin-top: 16px; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.12); }
+  .out { margin-top: 14px; font-size: 1rem; min-height: 1.4em; }
+  .out.err { color: #a32222; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; font-size: 0.85rem; color: #7d8a86; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Mop math</h1>
+  <p class="lede">Milliliters per bucket, buckets per bottle, and the honest cost of a clean floor. Exact arithmetic, every borrowed number labeled.</p>
+  <div class="grid">
+    <section>
+      <h2>Dilution plan</h2>
+      <p class="hint">Ratio and bucket become milliliters.</p>
+      <label for="d-ratio">Label ratio (1:N)</label>
+      <input id="d-ratio" type="number" value="100" min="0" step="1">
+      <label for="d-bucket">Bucket size (liters)</label>
+      <input id="d-bucket" type="number" value="5" min="0" step="0.5">
+      <button id="d-go">Measure the concentrate</button>
+      <div class="out" id="d-out"></div>
+    </section>
+    <section>
+      <h2>Bottle plan</h2>
+      <p class="hint">A bottle becomes buckets and weeks.</p>
+      <label for="b-bottle">Bottle size (ml)</label>
+      <input id="b-bottle" type="number" value="500" min="0" step="10">
+      <label for="b-ratio">Label ratio (1:N)</label>
+      <input id="b-ratio" type="number" value="100" min="0" step="1">
+      <label for="b-bucket">Bucket size (liters)</label>
+      <input id="b-bucket" type="number" value="5" min="0" step="0.5">
+      <label for="b-week">Buckets a week</label>
+      <input id="b-week" type="number" value="3" min="0" step="1">
+      <button id="b-go">Plan the bottle</button>
+      <div class="out" id="b-out"></div>
+    </section>
+    <section>
+      <h2>Cost plan</h2>
+      <p class="hint">A price becomes the cost per bucket.</p>
+      <label for="c-price">Bottle price</label>
+      <input id="c-price" type="number" value="8" min="0" step="0.5">
+      <label for="c-bottle">Bottle size (ml)</label>
+      <input id="c-bottle" type="number" value="500" min="0" step="10">
+      <label for="c-ratio">Label ratio (1:N)</label>
+      <input id="c-ratio" type="number" value="100" min="0" step="1">
+      <label for="c-bucket">Bucket size (liters)</label>
+      <input id="c-bucket" type="number" value="5" min="0" step="0.5">
+      <label for="c-week">Buckets a week</label>
+      <input id="c-week" type="number" value="3" min="0" step="1">
+      <button id="c-go">Count the cost</button>
+      <div class="out" id="c-out"></div>
+    </section>
+  </div>
+</main>
+<footer>Built by the app factory. <a href="index.html">About</a> &middot; <a href="https://github.com/iLanis-agent/mopmath">Source</a></footer>
+<script src="engine.js"></script>
+<script>
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function show(id, r, render){
+  var el = document.getElementById(id);
+  if (r.error) { el.textContent = r.error; el.classList.add('err'); }
+  else { el.textContent = render(r); el.classList.remove('err'); }
+}
+document.getElementById('d-go').addEventListener('click', function(){
+  show('d-out', MopMath.dilutePlan(num('d-ratio'),num('d-bucket')), MopMath.renderDilute);
+});
+document.getElementById('b-go').addEventListener('click', function(){
+  show('b-out', MopMath.bottlePlan(num('b-bottle'),num('b-ratio'),num('b-bucket'),num('b-week')), MopMath.renderBottle);
+});
+document.getElementById('c-go').addEventListener('click', function(){
+  show('c-out', MopMath.costPlan(num('c-price'),num('c-bottle'),num('c-ratio'),num('c-bucket'),num('c-week')), MopMath.renderCost);
+});
+</script>
+</body>
+</html>
